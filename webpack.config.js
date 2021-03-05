@@ -12,11 +12,15 @@ var config = {
                 test: /\.tsx?$/,
                 use: "ts-loader",
                 exclude: /node_modules/
-            }
+            },
+            {
+                test: /\.css$/i,
+                use: ['style-loader', 'css-loader', 'postcss-loader'],
+              },
         ]
     },
     resolve: {
-        extensions: [".tsx", ".ts", ".js"],
+        extensions: [".tsx", ".ts", ".js", ".css"],
         modules: ["src", "node_modules"]
     }
 }
@@ -32,14 +36,33 @@ var server = Object.assign({}, config, {
     }
 });
 
-var client = Object.assign({}, config, {
-    name: "client",
+var loginApp = Object.assign({}, config, {
+    name: "login",
     target: "web",
     entry: path.resolve(__dirname, "login-app/src/index.tsx"),
     output: {
-        filename: "bundle.js",
+        filename: "login-bundle.js",
         path: path.resolve(__dirname, "build")
     }
 });
 
-module.exports = [client, server];
+var pageApp = Object.assign({}, config, {
+    name: "page",
+    target: "web",
+    entry: path.resolve(__dirname, "page-app/src/index.tsx"),
+    output: {
+        filename: "page-bundle.js",
+        path: path.resolve(__dirname, "build")
+    }
+});
+
+var styles = Object.assign({}, config, {
+    name: "styles",
+    entry: [path.resolve(__dirname, "page-app/src/global.css"), path.resolve(__dirname, "login-app/src/global.css")],
+    output: {
+        filename: "global.css",
+        path: path.resolve(__dirname, "build")
+    }
+});
+
+module.exports = [loginApp, server, pageApp, styles];

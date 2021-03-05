@@ -8,6 +8,7 @@ export function changeTitle(
     switch (action.type) {
         case "CHANGE_TITLE": {
             return {
+                ...state,
                 title: action.data
             };
 		}

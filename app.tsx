@@ -5,9 +5,11 @@ import * as Redux from "redux";
 import { DBData } from './database';
 import * as ReactDOMServer from 'react-dom/server';
 import { Provider as ReduxProvider } from "react-redux";
-import App from './login-app/src/components/app';
+import LoginApp from './login-app/src/components/app';
+import PageApp from './page-app/src/components/app';
 import { StaticRouter } from 'react-router-dom';
 import { changeTitle } from './redux/reducers/title';
+import { Store } from './redux/store';
 
 declare const module: any;
 
@@ -28,20 +30,22 @@ function main() {
 
   app.get('/*', (req, res, next) => {
     const sub: string[] = req.subdomains
-
-    const store = Redux.createStore(changeTitle);
-    const appInitialState = JSON.stringify(store.getState()).replace(
-      /</g,
-      "\\u003c"
-    );
+   
     if (sub.length === 0) {
+
+      const store = Redux.createStore(changeTitle);
+     
+      const appInitialState = JSON.stringify(store.getState()).replace(
+        /</g,
+        "\\u003c"
+      );
 
 
       const context = {}
       const body = ReactDOMServer.renderToString(
         <ReduxProvider store={store}>
           <StaticRouter location={req.path} context={context}>
-            <App />
+            <LoginApp />
           </StaticRouter>
         </ReduxProvider>
 
@@ -52,20 +56,14 @@ function main() {
       <html>
           <head>
               <title>TypeScript ReactJS SSR App</title>
-              <style>
-                  body {
-                      margin: 0px;
-                      padding: 0px;
-                  }
-              </style>
-              <style id="jss-server-side"></style>
+              <link rel="stylesheet" href="global.css">
           </head>
           <body>
               <main id="app">${body}</main>
               <script>
               window["__PRELOADED_STATE__"] = ${appInitialState}
               </script>
-              <script type="application/javascript" src="bundle.js"></script>
+              <script type="application/javascript" src="login-bundle.js"></script>
           </body>
       </html>
   `)
@@ -76,7 +74,44 @@ function main() {
 
     else {
       const subdom = sub[0]
-      res.send(`Your subdomain is: ${subdom}`)
+
+      const store = Redux.createStore(changeTitle);
+      const initialState:Store = {
+        title: "This is the page app!",
+        subdomain: subdom
+      }
+      const appInitialState = JSON.stringify(initialState).replace(
+        /</g,
+        "\\u003c"
+      );
+      console.log(appInitialState)
+
+      const context = {}
+      const body = ReactDOMServer.renderToString(
+        <ReduxProvider store={store}>
+          <StaticRouter location={req.path} context={context}>
+            <LoginApp />
+          </StaticRouter>
+        </ReduxProvider>
+
+      );
+
+      res.send(`
+      <!DOCTYPE html>
+      <html>
+          <head>
+              <title>TypeScript ReactJS SSR App</title>
+              <link rel="stylesheet" href="global.css">
+          </head>
+          <body>
+              <main id="app">${body}</main>
+              <script>
+              window["__PRELOADED_STATE__"] = ${appInitialState}
+              </script>
+              <script type="application/javascript" src="page-bundle.js"></script>
+          </body>
+      </html>
+  `)
     }
   }
 

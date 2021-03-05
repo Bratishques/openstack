@@ -8,18 +8,19 @@ import { Store } from "../../../redux/store"
 interface HomeProps {
     title: string;
     changeTitle: any;
+    subdomain?: string
 }
 
-const Home = ({title, changeTitle}:HomeProps) => {
+const Home = ({title, changeTitle, subdomain}:HomeProps) => {
     const [counter, setCounter] = React.useState(0)
 
     const modifyTitle = () => {
-        changeTitle(title + title)
+        changeTitle(title + subdomain)
     }
 
     return (
         <>
-            <div className={`w-full h-20 bg-red-300`}>
+            <div className={'w-full h-20 bg-red-300'}>
                 <Link to="/test">Go to test</Link>
                 <h1>{title}</h1>
                 {counter}
@@ -36,7 +37,8 @@ const Home = ({title, changeTitle}:HomeProps) => {
 
 const mapStateToProps = (state: Store) => {
     return {
-        title: state.title
+        title: state.title,
+        subdomain: state.subdomain
     }
 }
 
