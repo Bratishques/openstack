@@ -11,7 +11,10 @@ import { StaticRouter } from 'react-router-dom';
 import { changeTitle } from './redux/reducers/title';
 import { Store } from './redux/store';
 
+
 declare const module: any;
+
+
 
 function main() {
   const app = express();
@@ -28,7 +31,11 @@ function main() {
 
   app.use(express.static('./build'));
 
-  app.get('/*', (req, res, next) => {
+  app.get("/api", (req, res) => {
+    res.send("This is an API")
+  })
+
+  app.get('/*', (req, res) => {
     const sub: string[] = req.subdomains
    
     if (sub.length === 0) {
@@ -69,12 +76,11 @@ function main() {
   `)
 
       res.end();
-      next();
+
     }
 
     else {
       const subdom = sub[0]
-
       const store = Redux.createStore(changeTitle);
       const initialState:Store = {
         title: "This is the page app!",
@@ -90,7 +96,7 @@ function main() {
       const body = ReactDOMServer.renderToString(
         <ReduxProvider store={store}>
           <StaticRouter location={req.path} context={context}>
-            <LoginApp />
+            <PageApp />
           </StaticRouter>
         </ReduxProvider>
 
@@ -108,10 +114,13 @@ function main() {
               <script>
               window["__PRELOADED_STATE__"] = ${appInitialState}
               </script>
-              <script type="application/javascript" src="page-bundle.js"></script>
+              <script type="application/javascript" src="page-bundle.js">
+              
+              </script>
           </body>
       </html>
   `)
+      res.end();
     }
   }
 

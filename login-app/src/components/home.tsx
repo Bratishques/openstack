@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { Link } from 'react-router-dom';
 import { changeTitle } from '../../../redux/actions';
 import { Store } from "../../../redux/store"
+import LoginLayout from '../layout/layout';
 
 interface HomeProps {
     title: string;
@@ -29,6 +30,7 @@ const Home = ({title, changeTitle}:HomeProps) => {
                 modifyTitle()
                 setCounter(counter + 1)}
             }>Testing</button>
+
         </>
 
     )
